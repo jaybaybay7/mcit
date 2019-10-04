@@ -1,8 +1,16 @@
+import java.util.Scanner;
 
 public class WordRunner {
+	
+	public WordRunner() {
+		
+	}
+	
+	//Read file and write file method
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
+		Scanner s = new Scanner(System.in);
+		
 
 	}
 

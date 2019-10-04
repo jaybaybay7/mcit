@@ -1,3 +1,5 @@
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -7,11 +9,6 @@ public class WordRecommender {
 	public WordRecommender(String fileName) {
 		this.filename = fileName;
 	}
-
-	/*
-	 * given two words, this function computes two measures of similarity and
-	 * returns the average.
-	 */
 
 	// helper method to return which of the two words is shorter
 	// used in the getSimilarityMetric method
@@ -24,12 +21,11 @@ public class WordRecommender {
 	}
 
 	/*
-	 * method for returning similarity. Uses returnShorterWord method
+	 * given two words, this function computes two measures of similarity and
+	 * returns the average.
 	 */
 	
 	public double getSimilarityMetric(String word1, String word2) {
-		
-		//Todo figure out how to handle words without the same length
 		 
 		 int leftSim = 0;
 		 int rightSim = 0;
@@ -60,14 +56,60 @@ public class WordRecommender {
 			 }
 		 }
 		 
-		 double simMetric = (Double.valueOf(leftSim) + Double.valueOf(rightSim)) / 2;
+		 double simMetric = (Double.valueOf(leftSim) + Double.valueOf(rightSim)) / 2.0;
 		 
 		 return simMetric;
 	 }
+	
+	
+	/*
+	 * given an incorrect word, return a list of legal word
+	 * suggestions as per an algorithm
+	 */
 
 	public ArrayList<String> getWordSuggestions(String word, int n, double commonPercent, int topN) {
-		// given an incorrect word, return a list of legal word
-		// suggestions as per an algorithm given below.
+		
+		//Defining all the variables needed
+		String testWord = word.toLowerCase();
+		int testWordLength = word.length();
+		int upperBoundWordLength = testWordLength + n;
+		int lowerBoundWordLength = testWordLength - n;
+		ArrayList<String> wordList = new ArrayList<String>();
+		ArrayList<String> word1Chars = new ArrayList<String>();
+		ArrayList<String> word2Chars = new ArrayList<String>();
+		
+		//making engDictionary import work
+		File input = new File("./engDictionary.txt");
+		
+		//pulling each character of the input word into a arraylist
+		
+		for (int i = 0; i < testWordLength; i++) {
+			word1Chars.add(Character.toString(testWord.charAt(i)));
+		}
+		
+		
+		//Open up dictionary file and read in each word
+		 try {
+			Scanner s = new Scanner(input);
+			
+			while(s.hasNext()) {
+				String nextWord = s.next();
+				
+			}
+			
+			
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		
+		
+		
+		
+		return word1Chars;
+		
 	}
 
 	public ArrayList<String> getWordsWithCommonLetters(String word, ArrayList<String> listOfWords, int n) {
@@ -82,7 +124,7 @@ public class WordRecommender {
 
 	public static void main(String[] args) {
 		WordRecommender wr = new WordRecommender("wordtedster_good");
-
-		System.out.println(wr.getSimilarityMetric("h", "hello"));
+		
+		wr.getWordSuggestions("hello", 1, 1.0, 1);
 	}
 }
