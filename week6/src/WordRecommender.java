@@ -24,92 +24,117 @@ public class WordRecommender {
 	 * given two words, this function computes two measures of similarity and
 	 * returns the average.
 	 */
-	
+
 	public double getSimilarityMetric(String word1, String word2) {
-		 
-		 int leftSim = 0;
-		 int rightSim = 0;
-		 
-		 StringBuilder w1r = new StringBuilder();
-		 StringBuilder w2r = new StringBuilder();
-		 
-		 //w1r is now word1 backwards
-		 w1r.append(word1);
-		 w1r.reverse();
-		 
-		//w2r is now word2 backwards
-		 w2r.append(word2);
-		 w2r.reverse();
-		 
-		 
-		 //Left to right letter check
-			for (int i = 0; i < returnShorterWord(word1, word2).length(); i++) {
-			 if (word1.charAt(i) == word2.charAt(i)) {
-				 leftSim++;
-			 }
-		 }
-		 
-		 //righjt to left letter check
-		 for (int j = 0; j < returnShorterWord(word1, word2).length(); j++) {
-			 if(w1r.charAt(j) == w2r.charAt(j)) {
-				 rightSim++;
-			 }
-		 }
-		 
-		 double simMetric = (Double.valueOf(leftSim) + Double.valueOf(rightSim)) / 2.0;
-		 
-		 return simMetric;
-	 }
-	
-	
+
+		int leftSim = 0;
+		int rightSim = 0;
+
+		StringBuilder w1r = new StringBuilder();
+		StringBuilder w2r = new StringBuilder();
+
+		// w1r is now word1 backwards
+		w1r.append(word1);
+		w1r.reverse();
+
+		// w2r is now word2 backwards
+		w2r.append(word2);
+		w2r.reverse();
+
+		// Left to right letter check
+		for (int i = 0; i < returnShorterWord(word1, word2).length(); i++) {
+			if (word1.charAt(i) == word2.charAt(i)) {
+				leftSim++;
+			}
+		}
+
+		// righjt to left letter check
+		for (int j = 0; j < returnShorterWord(word1, word2).length(); j++) {
+			if (w1r.charAt(j) == w2r.charAt(j)) {
+				rightSim++;
+			}
+		}
+
+		double simMetric = (Double.valueOf(leftSim) + Double.valueOf(rightSim)) / 2.0;
+
+		return simMetric;
+	}
+
 	/*
-	 * given an incorrect word, return a list of legal word
-	 * suggestions as per an algorithm
+	 * given an incorrect word, return a list of legal word suggestions as per an
+	 * algorithm
 	 */
 
 	public ArrayList<String> getWordSuggestions(String word, int n, double commonPercent, int topN) {
-		
-		//Defining all the variables needed
+
+		// Defining all the variables needed
 		String testWord = word.toLowerCase();
 		int testWordLength = word.length();
 		int upperBoundWordLength = testWordLength + n;
 		int lowerBoundWordLength = testWordLength - n;
-		ArrayList<String> wordList = new ArrayList<String>();
+
+		// wordListReturn will be returned as the words to replace the mispelled word
+		ArrayList<String> wordListReturn = new ArrayList<String>();
+		ArrayList<String> wordListTemp = new ArrayList<String>();
 		ArrayList<String> word1Chars = new ArrayList<String>();
 		ArrayList<String> word2Chars = new ArrayList<String>();
-		
-		//making engDictionary import work
+
+		// making engDictionary import work
 		File input = new File("./engDictionary.txt");
-		
-		//pulling each character of the input word into a arraylist
-		
+
+		// pulling each character of the input word into a arraylist
+
 		for (int i = 0; i < testWordLength; i++) {
 			word1Chars.add(Character.toString(testWord.charAt(i)));
 		}
-		
-		
-		//Open up dictionary file and read in each word
-		 try {
+
+		// Open up dictionary file and read in each word. Build an arraylist of each
+		// word's characters
+		try {
 			Scanner s = new Scanner(input);
-			
-			while(s.hasNext()) {
+
+			while (s.hasNext()) {
 				String nextWord = s.next();
-				
+
+				// creating an arraylist with all words that are of in between the + or - length
+				// of word
+				if (lowerBoundWordLength <= nextWord.length() && nextWord.length() <= upperBoundWordLength) {
+					wordListTemp.add(nextWord);
+				}
+
+				// iterate over the list and grab each word and turn chars into an array.
+				for (int i = 0; i < wordListTemp.size(); i++) {
+					String tempWord = wordListTemp.get(i);
+
+					for (int j = 0; j < tempWord.length(); j++) {
+						word2Chars.add(Character.toString(tempWord.charAt(j)));
+					}
+
+					// Still inside the for loop. Check against the probability and if true, then
+					// add to wordListReturn.
+					int counter = 0;
+
+					for (int k = 0; k < upperBoundWordLength; k++) {
+						if (word2Chars.get(i) != null) {
+							if (word1Chars.contains(word2Chars.get(k)) == true) {
+								counter = counter + 1;
+							}
+						}
+					}
+
+				}
+
 			}
-			
-			
+
+			s.close();
+
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		return word2Chars;
 		
-		
-		
-		
-		
-		
-		return word1Chars;
-		
+
 	}
 
 	public ArrayList<String> getWordsWithCommonLetters(String word, ArrayList<String> listOfWords, int n) {
@@ -124,7 +149,7 @@ public class WordRecommender {
 
 	public static void main(String[] args) {
 		WordRecommender wr = new WordRecommender("wordtedster_good");
-		
-		wr.getWordSuggestions("hello", 1, 1.0, 1);
+
+		wr.getWordSuggestions("hel", 1, 1.0, 1);
 	}
 }
