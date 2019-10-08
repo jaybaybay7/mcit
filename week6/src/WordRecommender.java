@@ -190,11 +190,17 @@ public class WordRecommender {
 	}
 
 	public String prettyPrint(ArrayList<String> list) {
-
+		String y = "";
+		for (int i = 0; i < list.size(); i++) {
+			String n = (i+1 +"." + " " + list.get(i) + "\n");
+			y = y + n;
+		}
+		return y;
 	}
 
 	public static void main(String[] args) {
 		WordRecommender wr = new WordRecommender("wordtedster_good");
+		
 
 		System.out.println(wr.getWordSuggestions("fart", 2, 1.0, 1));
 	}
