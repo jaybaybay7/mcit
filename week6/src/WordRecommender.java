@@ -1,6 +1,8 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.Scanner;
 
 public class WordRecommender {
@@ -78,6 +80,9 @@ public class WordRecommender {
 		ArrayList<String> wordListTemp = new ArrayList<String>();
 		ArrayList<String> word1Chars = new ArrayList<String>();
 		ArrayList<String> word2Chars = new ArrayList<String>();
+		DecimalFormat df = new DecimalFormat("#.00");
+		int counter = 0;
+		double counterProb = 0.00;
 
 		// making engDictionary import work
 		File input = new File("./engDictionary.txt");
@@ -87,6 +92,10 @@ public class WordRecommender {
 		for (int i = 0; i < testWordLength; i++) {
 			word1Chars.add(Character.toString(testWord.charAt(i)));
 		}
+
+		// Remove duplicate letters from word
+		LinkedHashSet<String> hs1 = new LinkedHashSet<String>(word1Chars);
+		ArrayList<String> word1CharsNoDups = new ArrayList<String>(hs1);
 
 		// Open up dictionary file and read in each word. Build an arraylist of each
 		// word's characters
@@ -101,39 +110,88 @@ public class WordRecommender {
 				if (lowerBoundWordLength <= nextWord.length() && nextWord.length() <= upperBoundWordLength) {
 					wordListTemp.add(nextWord);
 				}
+			}
 
-				// iterate over the list and grab each word and turn chars into an array.
-				for (int i = 0; i < wordListTemp.size(); i++) {
-					String tempWord = wordListTemp.get(i);
+			// iterate over the list and grab each word and turn chars into an array.
+			// Reset Counter
+			for (int i = 0; i < wordListTemp.size(); i++) {
+				String tempWord = wordListTemp.get(i);
+				counter = 0;
+				word2Chars.clear();
 
-					for (int j = 0; j < tempWord.length(); j++) {
-						word2Chars.add(Character.toString(tempWord.charAt(j)));
-					}
+				for (int j = 0; j < tempWord.length(); j++) {
+					word2Chars.add(Character.toString(tempWord.charAt(j)));
+				}
 
-					// Still inside the for loop. Check against the probability and if true, then
-					// add to wordListReturn.
-					int counter = 0;
+				LinkedHashSet<String> hs2 = new LinkedHashSet<String>(word2Chars);
+				ArrayList<String> word2CharsNoDups = new ArrayList<String>(hs2);
+				
 
-					for (int k = 0; k < upperBoundWordLength; k++) {
-						if (word2Chars.get(i) != null) {
-							if (word1Chars.contains(word2Chars.get(k)) == true) {
+				// Still inside the for loop. Check against the probability and if true, then
+				// add to wordListReturn.
+				System.out.println(word);
+				System.out.println(tempWord);
+				System.out.println(hs1);
+				System.out.println(hs2);
+
+				if (hs2.size() >= hs1.size()) {
+
+					// Need to solve for duplicate letters in word2Chars
+
+					for (int k = 0; k < word1CharsNoDups.size(); k++) {
+						for (int q = 0; q < word2CharsNoDups.size(); q++) {
+							if (word1CharsNoDups.get(k).equals(word2CharsNoDups.get(q))) {
 								counter = counter + 1;
 							}
 						}
+
+					}
+					System.out.println(counter);
+					System.out.println(testWordLength);
+					System.out.println();
+					counterProb = counter / (double) tempWord.length();
+					System.out.println(df.format(counterProb));
+					System.out.println();
+					System.out.println(tempWord);
+					System.out.println();
+
+					if (counterProb >= commonPercent) {
+						wordListReturn.add(tempWord);
 					}
 
+				} else {
+					for (int m = 0; m < word2CharsNoDups.size(); m++) {
+						for (int r = 0; r < word1CharsNoDups.size(); r++) {
+							if (word1CharsNoDups.get(r).equals(word2CharsNoDups.get(m))) {
+								counter = counter + 1;
+							}
+						}
+
+					}
+
+					System.out.println(counter);
+					System.out.println(testWordLength);
+					System.out.println();
+					counterProb = counter / (double) testWordLength;
+					System.out.println(df.format(counterProb));
+					System.out.println();
+
+					if (counterProb >= commonPercent) {
+						wordListReturn.add(tempWord);
+
+					}
 				}
 
 			}
-
+			
+			
 			s.close();
 
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return word2Chars;
-		
+		return wordListReturn;
 
 	}
 
@@ -141,6 +199,7 @@ public class WordRecommender {
 //		 /Given a word and a list of words from a dictionary, return the list of words in the dictionary that
 		// have at least (>=) n letters in common.
 		// todo
+
 	}
 
 	public String prettyPrint(ArrayList<String> list) {
@@ -150,6 +209,6 @@ public class WordRecommender {
 	public static void main(String[] args) {
 		WordRecommender wr = new WordRecommender("wordtedster_good");
 
-		wr.getWordSuggestions("hel", 1, 1.0, 1);
+		System.out.println(wr.getWordSuggestions("hell", 2, 0.75, 1));
 	}
 }
