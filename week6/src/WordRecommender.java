@@ -123,20 +123,18 @@ public class WordRecommender {
 					word2Chars.add(Character.toString(tempWord.charAt(j)));
 				}
 
+				
+				//Removing dups. Then turning back into arraylist
 				LinkedHashSet<String> hs2 = new LinkedHashSet<String>(word2Chars);
 				ArrayList<String> word2CharsNoDups = new ArrayList<String>(hs2);
 				
 
 				// Still inside the for loop. Check against the probability and if true, then
 				// add to wordListReturn.
-				System.out.println(word);
-				System.out.println(tempWord);
-				System.out.println(hs1);
-				System.out.println(hs2);
 
-				if (hs2.size() >= hs1.size()) {
+				if (word2CharsNoDups.size() >= word1CharsNoDups.size()) {
 
-					// Need to solve for duplicate letters in word2Chars
+					
 
 					for (int k = 0; k < word1CharsNoDups.size(); k++) {
 						for (int q = 0; q < word2CharsNoDups.size(); q++) {
@@ -146,14 +144,8 @@ public class WordRecommender {
 						}
 
 					}
-					System.out.println(counter);
-					System.out.println(testWordLength);
-					System.out.println();
-					counterProb = counter / (double) tempWord.length();
-					System.out.println(df.format(counterProb));
-					System.out.println();
-					System.out.println(tempWord);
-					System.out.println();
+					counterProb = counter / (double) word2CharsNoDups.size();
+					
 
 					if (counterProb >= commonPercent) {
 						wordListReturn.add(tempWord);
@@ -168,13 +160,8 @@ public class WordRecommender {
 						}
 
 					}
-
-					System.out.println(counter);
-					System.out.println(testWordLength);
-					System.out.println();
-					counterProb = counter / (double) testWordLength;
-					System.out.println(df.format(counterProb));
-					System.out.println();
+					
+					counterProb = counter / (double) word1CharsNoDups.size();
 
 					if (counterProb >= commonPercent) {
 						wordListReturn.add(tempWord);
@@ -209,6 +196,6 @@ public class WordRecommender {
 	public static void main(String[] args) {
 		WordRecommender wr = new WordRecommender("wordtedster_good");
 
-		System.out.println(wr.getWordSuggestions("hell", 2, 0.75, 1));
+		System.out.println(wr.getWordSuggestions("fart", 2, 1.0, 1));
 	}
 }
