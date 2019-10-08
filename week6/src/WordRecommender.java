@@ -2,8 +2,13 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
+import java.util.TreeMap;
 
 public class WordRecommender {
 	private String filename;
@@ -75,8 +80,11 @@ public class WordRecommender {
 		int upperBoundWordLength = testWordLength + n;
 		int lowerBoundWordLength = testWordLength - n;
 
-		// wordListReturn will be returned as the words to replace the mispelled word
+		// wordListReturn will be returned as the words to replace the misspelled word
 		ArrayList<String> wordListReturn = new ArrayList<String>();
+		
+		//WordListFinal is the final returned list of values for this method.
+		ArrayList<String> wordListFinal = new ArrayList<String>();
 		ArrayList<String> wordListTemp = new ArrayList<String>();
 		ArrayList<String> word1Chars = new ArrayList<String>();
 		ArrayList<String> word2Chars = new ArrayList<String>();
@@ -123,18 +131,14 @@ public class WordRecommender {
 					word2Chars.add(Character.toString(tempWord.charAt(j)));
 				}
 
-				
-				//Removing dups. Then turning back into arraylist
+				// Removing dups. Then turning back into arraylist
 				LinkedHashSet<String> hs2 = new LinkedHashSet<String>(word2Chars);
 				ArrayList<String> word2CharsNoDups = new ArrayList<String>(hs2);
-				
 
 				// Still inside the for loop. Check against the probability and if true, then
 				// add to wordListReturn.
 
 				if (word2CharsNoDups.size() >= word1CharsNoDups.size()) {
-
-					
 
 					for (int k = 0; k < word1CharsNoDups.size(); k++) {
 						for (int q = 0; q < word2CharsNoDups.size(); q++) {
@@ -145,7 +149,6 @@ public class WordRecommender {
 
 					}
 					counterProb = counter / (double) word2CharsNoDups.size();
-					
 
 					if (counterProb >= commonPercent) {
 						wordListReturn.add(tempWord);
@@ -160,7 +163,7 @@ public class WordRecommender {
 						}
 
 					}
-					
+
 					counterProb = counter / (double) word1CharsNoDups.size();
 
 					if (counterProb >= commonPercent) {
@@ -170,14 +173,45 @@ public class WordRecommender {
 				}
 
 			}
-			
-			
+
 			s.close();
 
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		//Creating an arraylist to store sim values of the wordListReturn objects
+		ArrayList<Double> simArray = new ArrayList<Double>();
+		
+		//Create a hashmap with wordListReturn and then sort by similarity. Append to final list
+		HashMap<String, Double> hm = new HashMap<String, Double>();
+		
+		for (String w : wordListReturn) {
+			double simIntTemp = getSimilarityMetric(word, w);
+			simArray.add(simIntTemp);
+		}
+		
+		
+		for (int i = 0 ; i < wordListReturn.size(); i++) {
+			hm.put(wordListReturn.get(i), simArray.get(i));
+		}
+		
+		System.out.println(hm);
+		
+		Map<String, Double> map = new TreeMap<String, Double>(hm);
+		Set set = map.entrySet();
+        Iterator iterator = set.iterator();
+         while(iterator.hasNext()) {
+              Map.Entry me = (Map.Entry)iterator.next();
+              System.out.print(me.getKey() + ": ");
+              System.out.println(me.getValue());
+         }
+         
+         for (int i = 0; i < topN; i++) {
+        	 wordListFinal.add(map.getKey());
+         }
+		
 		return wordListReturn;
 
 	}
@@ -192,7 +226,7 @@ public class WordRecommender {
 	public String prettyPrint(ArrayList<String> list) {
 		String y = "";
 		for (int i = 0; i < list.size(); i++) {
-			String n = (i+1 +"." + " " + list.get(i) + "\n");
+			String n = (i + 1 + "." + " " + list.get(i) + "\n");
 			y = y + n;
 		}
 		return y;
@@ -200,8 +234,7 @@ public class WordRecommender {
 
 	public static void main(String[] args) {
 		WordRecommender wr = new WordRecommender("wordtedster_good");
-		
 
-		System.out.println(wr.getWordSuggestions("fart", 2, 1.0, 1));
+		System.out.println(wr.getWordSuggestions("hello", 2, 1.0, 1));
 	}
 }
