@@ -1,1 +1,5 @@
-This is a readme file
+This is a readme file.
+
+The getWordSuggestions method is coupled together too tightly with other algoritms that need to be 
+run. By having 4 parameters in the method, the method becomes very heavy and complex. I would break
+out each of those parameters into their own methods and focus on having each method do one task. 

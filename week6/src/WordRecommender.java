@@ -1,14 +1,9 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.security.KeyStore.Entry;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
+
 
 public class WordRecommender {
 	private String filename;
@@ -185,7 +180,7 @@ public class WordRecommender {
 		ArrayList<Double> simArray = new ArrayList<Double>();
 		
 		//Create a hashmap with wordListReturn and then sort by similarity. Append to final list
-		HashMap<String, Double> hm = new HashMap<String, Double>();
+		LinkedHashMap<String, Double> hm = new LinkedHashMap<String, Double>();
 		
 		for (String w : wordListReturn) {
 			double simIntTemp = getSimilarityMetric(word, w);
@@ -199,20 +194,35 @@ public class WordRecommender {
 		
 		System.out.println(hm);
 		
+		
+		//Need to figure out the sorting thing. Maybe convert this hash into a new list somehow?
 		Map<String, Double> map = new TreeMap<String, Double>(hm);
-		Set set = map.entrySet();
-        Iterator iterator = set.iterator();
-         while(iterator.hasNext()) {
-              Map.Entry me = (Map.Entry)iterator.next();
-              System.out.print(me.getKey() + ": ");
-              System.out.println(me.getValue());
-         }
+		LinkedHashMap<String, Double> sortedMap = new LinkedHashMap<String, Double>();
+		
+		for (int i = 0; i < map.size(); i++) {
+			for (int j = 0; j < map.size(); j++) {
+				String temp = "";
+				if ((Double) map.values().toArray()[i] > (Double) map.values().toArray()[j]) {
+					temp = String.valueOf(map.values().toArray()[i]);
+					map.values().toArray()[i] = map.values().toArray()[j];
+					map.values().toArray()[i] = temp;
+				}
+			}
+		}
+		System.out.println(map);
+		
+		//Set set = map.entrySet();
+        //Iterator iterator = set.iterator();
+       //while(iterator.hasNext()) {
+          
+         //   sortedMap.put(String.valueOf(me.getKey()), (Double) me.getValue());
+     
+
          
          for (int i = 0; i < topN; i++) {
-        	 wordListFinal.add(map.getKey());
+        	 wordListFinal.add(String.valueOf(map.keySet().toArray()[i]));
          }
-		
-		return wordListReturn;
+		return wordListFinal;
 
 	}
 
@@ -231,10 +241,14 @@ public class WordRecommender {
 		}
 		return y;
 	}
+	
+	public String getFileName() {
+		return this.filename;
+	}
 
 	public static void main(String[] args) {
 		WordRecommender wr = new WordRecommender("wordtedster_good");
 
-		System.out.println(wr.getWordSuggestions("hello", 2, 1.0, 1));
+		System.out.println(wr.getWordSuggestions("hell", 2, 0.75, 2));
 	}
 }
