@@ -34,28 +34,50 @@ public class WordRunner {
 		Scanner k = new Scanner(System.in);
 		String letterTemp = k.nextLine();
 		String letter = letterTemp.toLowerCase();
-		
+
 		boolean check = true;
 		while (check) {
 			if (letter.equals("a") || letter.equals("r") || letter.equals("t")) {
 				check = false;
 				break;
-				
-				
+
 			} else {
 				System.out.println("Please enter a valid response");
 				check = true;
-				k.nextLine();
+				String newLetter = k.nextLine();
+				letter = newLetter.toLowerCase();
 				
+
 			}
-		} return letter;
+		}
+		return letter;
+	}
+
+	public int inputNumberChecker() {
+		Scanner w = new Scanner(System.in);
+		int number = w.nextInt();
+
+		boolean check = true;
+		while (check) {
+			if (number == 1 || number == 2 || number == 3) {
+				check = false;
+				break;
+
+			} else {
+				System.out.println("Please enter a valid response");
+				check = true;
+				number = w.nextInt();
+
+			}
+		}
+		return number;
 	}
 
 	public void spellWriter() {
 		WordRecommender wr = new WordRecommender("./good_words.txt");
 
 		File myfile = new File("/Users/jaymag/git/mcit/week6/src/bad_words.txt");
-		
+
 		Scanner s;
 		try {
 			s = new Scanner(myfile);
@@ -69,19 +91,19 @@ public class WordRunner {
 					fw.write(" ");
 				}
 				if (spellChecker(temp) == false) {
-					System.out.println("The word " + temp + " is misspelled");
+					System.out.println("The word " + temp + " is misspelled.");
 
 					ArrayList<String> tempStringArray = wr.getWordSuggestions(temp, 2, 0.75, 3);
-					
-					//Condition if the word suggestions return no values
+
+					// Condition if the word suggestions return no values
 					if (tempStringArray.get(0).equals("0")) {
 						System.out.println("There are 0 suggestions in our dictionary for this word.");
 						System.out.println("Press ‘a’ for accept as is, ‘t’ for type in manually.");
-						
-						//Check to make sure user inputs the right letter
+
+						// Check to make sure user inputs the right letter
 						String thisLetter = inputLetterChecker();
-						
-						//conditionals
+
+						// conditionals
 						if (thisLetter.equals("a")) {
 							fw.write(temp);
 							fw.write(" ");
@@ -96,37 +118,36 @@ public class WordRunner {
 						}
 
 					} else {
-						
-						//Conditional for if the suggestions have values in them
+
+						// Conditional for if the suggestions have values in them
 						System.out.println("The following suggestions are available:");
 
 						System.out.println(wr.prettyPrint(tempStringArray));
 						System.out.println("Press ‘r’ for replace, ‘a’ for accept as is, ‘t’ for type in manually.");
+						
 						String letter = inputLetterChecker();
 
 						if (letter.equals("a")) {
 							fw.write(temp);
 							fw.write(" ");
 						} else if (letter.equals("r")) {
-							Scanner r = new Scanner(System.in);
 							System.out.println(
 									"Enter the number corresponding to the word that you want to use for replacement.");
-							int number = r.nextInt();
 
-							if (number == 1) {
+							// do the check to ensure the number is correct
+							int newNumber = inputNumberChecker();
+
+							if (newNumber == 1) {
 								fw.write(tempStringArray.get(0));
 								fw.write(" ");
-							} else if (number == 2) {
+							} else if (newNumber == 2) {
 								fw.write(tempStringArray.get(1));
 								fw.write(" ");
-							} else if (number == 3) {
+							} else if (newNumber == 3) {
 								fw.write(tempStringArray.get(2));
 								fw.write(" ");
 							}
-							// just to keep the program running. Probably don't need this. 
-							else {
-								fw.write(temp);
-							}
+
 						} else if (letter.equals("t")) {
 							Scanner p = new Scanner(System.in);
 							System.out.println(
