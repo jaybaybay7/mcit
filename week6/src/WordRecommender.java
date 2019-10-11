@@ -209,7 +209,7 @@ public class WordRecommender {
 				}
 			}
 		}
-		System.out.println(map);
+		
 		
 		//Set set = map.entrySet();
         //Iterator iterator = set.iterator();
