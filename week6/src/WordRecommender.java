@@ -4,7 +4,6 @@ import java.security.KeyStore.Entry;
 import java.text.DecimalFormat;
 import java.util.*;
 
-
 public class WordRecommender {
 	private String filename;
 
@@ -77,8 +76,8 @@ public class WordRecommender {
 
 		// wordListReturn will be returned as the words to replace the misspelled word
 		ArrayList<String> wordListReturn = new ArrayList<String>();
-		
-		//WordListFinal is the final returned list of values for this method.
+
+		// WordListFinal is the final returned list of values for this method.
 		ArrayList<String> wordListFinal = new ArrayList<String>();
 		ArrayList<String> wordListTemp = new ArrayList<String>();
 		ArrayList<String> word1Chars = new ArrayList<String>();
@@ -175,53 +174,63 @@ public class WordRecommender {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		//Creating an arraylist to store sim values of the wordListReturn objects
+
+		// Creating an arraylist to store sim values of the wordListReturn objects
 		ArrayList<Double> simArray = new ArrayList<Double>();
-		
-		//Create a hashmap with wordListReturn and then sort by similarity. Append to final list
+
+		// Create a hashmap with wordListReturn and then sort by similarity. Append to
+		// final list
 		LinkedHashMap<String, Double> hm = new LinkedHashMap<String, Double>();
-		
+
 		for (String w : wordListReturn) {
 			double simIntTemp = getSimilarityMetric(word, w);
 			simArray.add(simIntTemp);
 		}
-		
-		
-		for (int i = 0 ; i < wordListReturn.size(); i++) {
+
+		for (int i = 0; i < wordListReturn.size(); i++) {
 			hm.put(wordListReturn.get(i), simArray.get(i));
 		}
-		
-		//System.out.println(hm);
-		
-		
-		//Need to figure out the sorting thing. Maybe convert this hash into a new list somehow?
+
+		// System.out.println(hm);
+
+		// Need to figure out the sorting thing. Maybe convert this hash into a new list
+		// somehow?
 		Map<String, Double> map = new TreeMap<String, Double>(hm);
 		LinkedHashMap<String, Double> sortedMap = new LinkedHashMap<String, Double>();
-		
-		for (int i = 0; i < map.size(); i++) {
-			for (int j = 0; j < map.size(); j++) {
-				String temp = "";
-				if ((Double) map.values().toArray()[i] > (Double) map.values().toArray()[j]) {
-					temp = String.valueOf(map.values().toArray()[i]);
-					map.values().toArray()[i] = map.values().toArray()[j];
-					map.values().toArray()[i] = temp;
+
+		ArrayList<String> outOfBoundsChecker = new ArrayList<String>();
+		outOfBoundsChecker.add("0");
+
+		if (map.size() == 0) {
+			return outOfBoundsChecker;
+		} else {
+
+			for (int i = 0; i < map.size(); i++) {
+				for (int j = 0; j < map.size(); j++) {
+					String temp = "";
+					if ((Double) map.values().toArray()[i] > (Double) map.values().toArray()[j]) {
+						temp = String.valueOf(map.values().toArray()[i]);
+						map.values().toArray()[i] = map.values().toArray()[j];
+						map.values().toArray()[i] = temp;
+					}
 				}
 			}
 		}
-		
-		
-		//Set set = map.entrySet();
-        //Iterator iterator = set.iterator();
-       //while(iterator.hasNext()) {
-          
-         //   sortedMap.put(String.valueOf(me.getKey()), (Double) me.getValue());
-     
 
-         
-         for (int i = 0; i < topN; i++) {
-        	 wordListFinal.add(String.valueOf(map.keySet().toArray()[i]));
-         }
+		// Set set = map.entrySet();
+		// Iterator iterator = set.iterator();
+		// while(iterator.hasNext()) {
+
+		// sortedMap.put(String.valueOf(me.getKey()), (Double) me.getValue());
+		/*
+		 * 
+		 * 
+		 * if (topN == 0) { return outOfBoundsChecker; }
+		 */
+
+		for (int i = 0; i < topN; i++) {
+			wordListFinal.add(String.valueOf(map.keySet().toArray()[i]));
+		}
 		return wordListFinal;
 
 	}
@@ -241,7 +250,7 @@ public class WordRecommender {
 		}
 		return y;
 	}
-	
+
 	public String getFileName() {
 		return this.filename;
 	}
