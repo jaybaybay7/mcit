@@ -192,7 +192,7 @@ public class WordRecommender {
 			hm.put(wordListReturn.get(i), simArray.get(i));
 		}
 		
-		System.out.println(hm);
+		//System.out.println(hm);
 		
 		
 		//Need to figure out the sorting thing. Maybe convert this hash into a new list somehow?

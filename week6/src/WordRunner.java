@@ -55,9 +55,13 @@ public class WordRunner {
 						System.out.println("The following suggestions are available:");
 						System.out.println(wr.prettyPrint(wr.getWordSuggestions(temp, 2, 0.75, 3)));
 						System.out.println("Press ‘r’ for replace, ‘a’ for accept as is, ‘t’ for type in manually.");
-						//String letter = d.nextLine();
-						fw.write("false");
-						fw.write(" ");
+						String letter = d.nextLine();
+						
+						if (letter.equals("a")) {
+							fw.write(temp);
+							fw.write(" ");
+						}
+						
 					}
 					
 				
