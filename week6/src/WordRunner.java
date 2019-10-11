@@ -32,7 +32,8 @@ public class WordRunner {
 
 	public String inputLetterChecker() {
 		Scanner k = new Scanner(System.in);
-		String letter = k.nextLine();
+		String letterTemp = k.nextLine();
+		String letter = letterTemp.toLowerCase();
 		
 		boolean check = true;
 		while (check) {
@@ -71,14 +72,16 @@ public class WordRunner {
 					System.out.println("The word " + temp + " is misspelled");
 
 					ArrayList<String> tempStringArray = wr.getWordSuggestions(temp, 2, 0.75, 3);
+					
+					//Condition if the word suggestions return no values
 					if (tempStringArray.get(0).equals("0")) {
 						System.out.println("There are 0 suggestions in our dictionary for this word.");
 						System.out.println("Press ‘a’ for accept as is, ‘t’ for type in manually.");
 						
+						//Check to make sure user inputs the right letter
 						String thisLetter = inputLetterChecker();
 						
-						
-
+						//conditionals
 						if (thisLetter.equals("a")) {
 							fw.write(temp);
 							fw.write(" ");
@@ -93,7 +96,8 @@ public class WordRunner {
 						}
 
 					} else {
-
+						
+						//Conditional for if the suggestions have values in them
 						System.out.println("The following suggestions are available:");
 
 						System.out.println(wr.prettyPrint(tempStringArray));
@@ -110,13 +114,16 @@ public class WordRunner {
 							int number = r.nextInt();
 
 							if (number == 1) {
-								// fw.write(the first item from list)
+								fw.write(tempStringArray.get(0));
+								fw.write(" ");
 							} else if (number == 2) {
-								// fw.write(the second item)
+								fw.write(tempStringArray.get(1));
+								fw.write(" ");
 							} else if (number == 3) {
-								// fw.write(the third item)
+								fw.write(tempStringArray.get(2));
+								fw.write(" ");
 							}
-							// just to keep the program running
+							// just to keep the program running. Probably don't need this. 
 							else {
 								fw.write(temp);
 							}
