@@ -74,14 +74,20 @@ public class WordRunner {
 	}
 
 	public void spellWriter() {
-		WordRecommender wr = new WordRecommender("./good_words.txt");
+		Scanner b = new Scanner(System.in);
+		System.out.println("Please enter the file you would like to test");
+		String userFile = b.nextLine();
+		
+		WordRecommender wr = new WordRecommender(userFile);
 
-		File myfile = new File("/Users/jaymag/git/mcit/week6/src/bad_words.txt");
+		File myfile = new File(userFile);
+		
+		String[] fileWords = userFile.split("\\.");
 
 		Scanner s;
 		try {
 			s = new Scanner(myfile);
-			FileWriter fw = new FileWriter("tester_fix.txt", true);
+			FileWriter fw = new FileWriter(fileWords[0] + "_chk" + fileWords[1], true);
 
 			while (s.hasNext()) {
 				String temp = s.next().toLowerCase();
