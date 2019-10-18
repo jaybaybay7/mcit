@@ -87,7 +87,7 @@ public class WordRunner {
 		Scanner s;
 		try {
 			s = new Scanner(myfile);
-			FileWriter fw = new FileWriter(fileWords[0] + "_chk" + fileWords[1], true);
+			FileWriter fw = new FileWriter(fileWords[0] + "_chk" + "." + fileWords[1], true);
 
 			while (s.hasNext()) {
 				String temp = s.next().toLowerCase();

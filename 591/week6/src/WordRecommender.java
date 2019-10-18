@@ -3,6 +3,7 @@ import java.io.FileNotFoundException;
 import java.security.KeyStore.Entry;
 import java.text.DecimalFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class WordRecommender {
 	private String filename;
@@ -87,7 +88,7 @@ public class WordRecommender {
 		double counterProb = 0.00;
 
 		// making engDictionary import work
-		File input = new File("./engDictionary.txt");
+		File input = new File("engDictionary.txt");
 
 		// pulling each character of the input word into a arraylist
 
@@ -178,68 +179,132 @@ public class WordRecommender {
 		// Creating an arraylist to store sim values of the wordListReturn objects
 		ArrayList<Double> simArray = new ArrayList<Double>();
 
-		// Create a hashmap with wordListReturn and then sort by similarity. Append to
-		// final list
-		LinkedHashMap<String, Double> hm = new LinkedHashMap<String, Double>();
+		// Created new class to hold string, double value for testing
+		ArrayList<WordPairs> newList = new ArrayList<WordPairs>();
 
+		// create an array with the simMetric results
 		for (String w : wordListReturn) {
 			double simIntTemp = getSimilarityMetric(word, w);
 			simArray.add(simIntTemp);
 		}
 
+		// combining the words and the simMetric doubles together into WordPairs
 		for (int i = 0; i < wordListReturn.size(); i++) {
-			hm.put(wordListReturn.get(i), simArray.get(i));
+			WordPairs wp = new WordPairs(wordListReturn.get(i), simArray.get(i));
+			newList.add(wp);
 		}
 
-		// System.out.println(hm);
+		// NewList is now sorted in descending order by its value
+		for (int i = 0; i < newList.size(); i++) {
+			for (int j = i + 1; j < newList.size(); j++) {
+				Double temp = 0.00;
+				String tempW = "";
+				if (newList.get(i).getScore() < newList.get(j).getScore()) {
+					temp = newList.get(i).getScore();
+					tempW = newList.get(i).getWord();
 
-		// Need to figure out the sorting thing. Maybe convert this hash into a new list
-		// somehow?
-		Map<String, Double> map = new TreeMap<String, Double>(hm);
-		LinkedHashMap<String, Double> sortedMap = new LinkedHashMap<String, Double>();
+					newList.get(i).setScore(newList.get(j).getScore());
+					newList.get(i).setWord(newList.get(j).getWord());
 
-		ArrayList<String> outOfBoundsChecker = new ArrayList<String>();
-		outOfBoundsChecker.add("0");
-
-		if (map.size() == 0) {
-			return outOfBoundsChecker;
-		} else {
-
-			for (int i = 0; i < map.size(); i++) {
-				for (int j = 0; j < map.size(); j++) {
-					String temp = "";
-					if ((Double) map.values().toArray()[i] > (Double) map.values().toArray()[j]) {
-						temp = String.valueOf(map.values().toArray()[i]);
-						map.values().toArray()[i] = map.values().toArray()[j];
-						map.values().toArray()[i] = temp;
-					}
+					newList.get(j).setScore(temp);
+					newList.get(j).setWord(tempW);
 				}
 			}
 		}
 
-		// Set set = map.entrySet();
-		// Iterator iterator = set.iterator();
-		// while(iterator.hasNext()) {
+		// this is just to catch errors with one letter words that are not present in
+		// the dictionary.
+		ArrayList<String> outOfBoundsChecker = new ArrayList<String>();
+		outOfBoundsChecker.add("0");
 
-		// sortedMap.put(String.valueOf(me.getKey()), (Double) me.getValue());
-		/*
-		 * 
-		 * 
-		 * if (topN == 0) { return outOfBoundsChecker; }
-		 */
+		if (newList.size() == 0) {
+			return outOfBoundsChecker;
+		}
 
+		// create the final Arraylist to send to WordRunner.
 		for (int i = 0; i < topN; i++) {
-			wordListFinal.add(String.valueOf(map.keySet().toArray()[i]));
+			wordListFinal.add(newList.get(i).getWord());
 		}
 		return wordListFinal;
 
 	}
 
 	public ArrayList<String> getWordsWithCommonLetters(String word, ArrayList<String> listOfWords, int n) {
-//		 /Given a word and a list of words from a dictionary, return the list of words in the dictionary that
+		// Given a word and a list of words from a dictionary, return the list of words
+		// in the dictionary that
 		// have at least (>=) n letters in common.
-		// todo
 
+		String testWord = word.toLowerCase();
+		int testWordLength = word.length();
+		ArrayList<String> wordList = new ArrayList<String>();
+		ArrayList<String> wordCharList = new ArrayList<String>();
+
+		// Create an list with the characters from the word for testing against
+		for (int i = 0; i < testWord.length(); i++) {
+			wordCharList.add(Character.toString(testWord.charAt(i)));
+		}
+
+		LinkedHashSet<String> hm1 = new LinkedHashSet<String>(wordCharList);
+		ArrayList<String> wordCharsNoDups = new ArrayList<String>(hm1);
+
+		// This section produces a list of the chars of each word (no duplicates)
+		ArrayList<ArrayList<String>> listOfLists = new ArrayList<ArrayList<String>>();
+		ArrayList<String> charsFromWords = new ArrayList<String>();
+
+		for (int i = 0; i < listOfWords.size(); i++) {
+			for (int j = 0; j < listOfWords.get(i).length(); j++) {
+				charsFromWords.add(Character.toString(listOfWords.get(i).charAt(j)));
+			}
+
+			LinkedHashSet<String> hm = new LinkedHashSet<String>(charsFromWords);
+
+			ArrayList<String> hmNoDups = new ArrayList<String>(hm);
+
+			listOfLists.add(hmNoDups);
+			charsFromWords.clear();
+		}
+
+		ArrayList<WordPairsInt> alwp = new ArrayList<WordPairsInt>();
+		WordPairsInt wp = new WordPairsInt("", 0);
+
+		// section starting to count the number of equal letters (listWithoutDups,
+		// listOfLists[]
+		int counter = 0;
+
+		for (int i = 0; i < listOfWords.size(); i++) {
+			int length = returnShortLength(word, listOfLists.get(i));
+
+			int counter1 = 0;
+			for (int j = 0; j < length; j++) {
+				if (wordCharsNoDups.get(i).equals(listOfLists.get(i).get(j))) {
+					counter1 = counter1 + 1;
+				}
+			}
+			wp.setWord(listOfWords.get(i));
+			wp.setScore(counter1);
+			alwp.add(wp);
+			counter1 = 0;
+		}
+
+		// todo, scoring is not right
+
+		ArrayList<String> finalWords = new ArrayList<String>();
+
+		for (int i = 0; i < alwp.size(); i++) {
+			if (alwp.get(i).getScore() >= n) {
+				finalWords.add(alwp.get(i).getWord());
+			}
+		}
+
+		return finalWords;
+
+	}
+
+	public int returnShortLength(String word, ArrayList<String> list) {
+		if (word.length() < list.size()) {
+			return word.length();
+		}
+		return list.size();
 	}
 
 	public String prettyPrint(ArrayList<String> list) {
@@ -255,9 +320,4 @@ public class WordRecommender {
 		return this.filename;
 	}
 
-	public static void main(String[] args) {
-		WordRecommender wr = new WordRecommender("wordtedster_good");
-
-		System.out.println(wr.getWordSuggestions("hell", 2, 0.75, 2));
-	}
 }
