@@ -70,11 +70,26 @@ public class FormattedOutput {
 				pw.println(s);
 			}
 			
+			pw.flush();
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.out.println("Could not write the File out.  Check permissions, or contact course staff for help");
 		}
 	}
-	
+
+	public static void main(String[] args) {
+		FormattedOutput fo = new FormattedOutput();
+		Solver s = new Solver("flights_small.csv");
+		
+		
+		
+		fo.addAnswer(1, s.cancelledAirlineAnswer());
+		fo.addAnswer(2, s.questionTwoAnswer());
+		fo.addAnswer(3, s.questionThreeAnswer());
+		fo.addAnswer(4, s.questionFourAnswer());
+		System.out.println(fo.answers);
+		
+	}
 	
 }
