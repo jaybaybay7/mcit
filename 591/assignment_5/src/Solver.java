@@ -285,7 +285,7 @@ public class Solver {
 		return finalString;
 	}
 	
-	//helper to convert double into percentage
+	
 	public String toPercentage(double n, int digits){
 	    return String.format("%."+digits+"f",n*100)+"%";
 	}
@@ -335,6 +335,7 @@ public class Solver {
 		return maxCancelCode;
 	}
 
+	
 	public String questionThreeAnswer() {
 
 		// create a hashmap with all the miles added up
@@ -373,6 +374,7 @@ public class Solver {
 		return tailNumberMax;
 	}
 
+	
 	public String questionFourAnswer() {
 		//Which airport is the busiest by total number of flights in and out?
 		//return OriginAirportID
@@ -401,6 +403,9 @@ public class Solver {
 		return airportMax;
 	}
 	
+	/*
+	 * Return max key for a given hashmap
+	 */
 	public String returnMaxKey(HashMap<String, Integer> hm) {
 		String keyMax = "";
 		int maxValue = Collections.max(hm.values());
@@ -413,6 +418,7 @@ public class Solver {
 		
 		return keyMax;
 	}
+	
 	
 	public String questionFiveAnswer() {
 		
@@ -435,6 +441,7 @@ public class Solver {
 		return biggestSource;
 	}
 	
+	
 	public String questionSixAnswer() {
 		
 		HashMap<String, Integer> hmdep6 = depFlights();
@@ -456,7 +463,10 @@ public class Solver {
 		return biggestSink;
 	}
 	
-	//Hashmap for departing flights not including cancelled flights
+	
+	/*
+	 * Return Hashmap for departing flights not including cancelled flights 
+	 */
 	public HashMap<String, Integer> depFlights(){
 		HashMap<String, Integer> hmdep = new HashMap<String, Integer>();
 		
@@ -490,6 +500,9 @@ public class Solver {
 	}
 	
 	
+	/*
+	 * Return Hashmap for arriving flights not including cancelled flights 
+	 */
 	public HashMap<String, Integer> arriveFlights(){
 		HashMap<String, Integer> hmarr = new HashMap<String, Integer>();
 		
@@ -522,11 +535,86 @@ public class Solver {
 		return hmarr;
 	}
 	
-	public String questionSevenAnswer() {
+	
+	
+	public int questionSevenAnswer() {
 		//If arrivaldelay or departure delay > 60 (positive value), then add to count
 		
+		
+		
+		//final for loop to check delays over 60 minutes
+		int aaDelayCount = 0;
+		for (DataObj obj : noCancelNoDiverted(dataObjArray)) {
+			if(obj.getUniqueCarrier().equals("AA")){
+				
+				//check to see if departure delay is empty. If its empty then it should not be calculated.
+				if(!obj.getDepDelay().equals("")) {
+					if(Integer.valueOf(obj.getDepDelay()) > 60 || Integer.valueOf(obj.getArrDelay()) > 60) {
+						aaDelayCount++;
+					}
+			}
+		}
+		}
+		
+		return aaDelayCount;
+	}
+	
+	/*
+	 * Method use to return an arraylist with no diverted or cancelled flights
+	 */
+	public ArrayList<DataObj> noCancelNoDiverted(ArrayList<DataObj> objParam){
+		//First remove diverted flights for arraylist
+				ArrayList<DataObj> arrayNoDivert = new ArrayList<DataObj>();
+				for (DataObj obj : objParam) {
+					if(obj.getDiverted().equals("0")) {
+						arrayNoDivert.add(obj);
+					}
+				}
+				
+				//removing cancelled flights. Should have been done prior as this is not DRY
+				ArrayList<DataObj> newArray = new ArrayList<DataObj>();
+				for (DataObj obj: arrayNoDivert) {
+					if(obj.getCancelled().equals("0")) {
+						newArray.add(obj);
+					}
+				}
+	
+				
+				return newArray;
+	}
+
+	public String questionEightAnswer() {
+		//noCancelNoDiverted array should all have values i.e. no blank values
+		
+		HashMap<String, Integer> hm8 = new HashMap<String, Integer>();
+
+		// need to think about duplicate flight numbers
+
+		for (DataObj obj : noCancelNoDiverted(dataObjArray)) {
+			int delta = Integer.valueOf(obj.getDepDelay()) - Integer.valueOf(obj.getArrDelay());
+			// if new calculated delta is greater than value associated with key, then put
+			// it in as the new value;
+
+			if (hm8.containsKey(obj.getTailNum())) {
+				if (delta > hm8.get(obj.getTailNum())) {
+					hm8.put(obj.getTailNum(), delta);
+				}
+			}
+			else {
+				hm8.put(obj.getTailNum(), delta);
+			}
+
+
+		}
+
+		String maxKey = returnMaxKey(hm8);
+		
+		
+		
+
 		return "hi";
 	}
+	
 	
 	public static void main(String[] args) {
 		Solver s = new Solver("flights_small.csv");
@@ -535,7 +623,7 @@ public class Solver {
 		//System.out.println(s.cancelledAirlineAnswer());
 		//System.out.println(s.questionFourAnswer());
 		//System.out.println(s.questionThreeAnswer());
-		System.out.println(s.questionSixAnswer());
+		System.out.println(s.questionEightAnswer());
 		
 
 	}

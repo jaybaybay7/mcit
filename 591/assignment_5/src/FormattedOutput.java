@@ -88,6 +88,9 @@ public class FormattedOutput {
 		fo.addAnswer(2, s.questionTwoAnswer());
 		fo.addAnswer(3, s.questionThreeAnswer());
 		fo.addAnswer(4, s.questionFourAnswer());
+		fo.addAnswer(5, s.questionFiveAnswer());
+		fo.addAnswer(6, s.questionSixAnswer());
+		fo.addAnswer(7, s.questionSevenAnswer());
 		System.out.println(fo.answers);
 		
 	}
